@@ -1,0 +1,31 @@
+cmake_minimum_required(VERSION 3.17)
+
+# set the project name
+project(sdl-stb_truetype)
+
+# add the executable
+add_executable(main 
+	"main.cpp" 
+	"scene.hpp" "scene.cpp" 
+	"imgui_sdl/imgui_sdl.h" "imgui_sdl/imgui_sdl.cpp" 
+	"imgui_impl_sdl.h" "imgui_impl_sdl.cpp"
+	"texture.hpp" "texture.cpp" 
+	"menu_scene.hpp" "menu_scene.cpp" 
+	"stb_truetype_scene.hpp" "stb_truetype_scene.cpp" 
+	"stb_truetype_harfbuzz_scene.hpp" "stb_truetype_harfbuzz_scene.cpp"
+	"compare_scene.hpp" "compare_scene.cpp"
+	 "draw_text.cpp" "drawt_text.hpp")
+
+find_package(freetype CONFIG REQUIRED)
+find_package(SDL2 CONFIG REQUIRED)
+find_package(imgui CONFIG REQUIRED)
+find_package(harfbuzz CONFIG REQUIRED)
+find_package(utf8cpp CONFIG REQUIRED)
+find_path(STB_INCLUDE_DIRS "stb_truetype.h")
+
+target_include_directories(main PRIVATE ${STB_INCLUDE_DIRS})
+
+target_link_libraries(main PRIVATE SDL2::SDL2 SDL2::SDL2main imgui::imgui freetype harfbuzz::harfbuzz utf8cpp)
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Sarabun/fonts/Sarabun-Regular.ttf
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
