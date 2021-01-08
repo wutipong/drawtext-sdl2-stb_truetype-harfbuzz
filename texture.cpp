@@ -155,7 +155,7 @@ SDL_Texture *CreateTextureFromIndex(SDL_Renderer *renderer,
     SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
   }
 
-  dst = {c_x2, y, width, height};
+  dst = {c_x1, y, width, height};
 
   SDL_FreeFormat(format);
   SDL_FreeSurface(surface);

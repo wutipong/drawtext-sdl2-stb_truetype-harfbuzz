@@ -74,7 +74,7 @@ void DrawTextHarfbuzz(const std::array<char, bufferSize> &text,
       SDL_DestroyTexture(glyph_texture);
     }
 
-    x += (glyph_positions[i].x_advance >> 6);
+    x += advance;
   }
 
   hb_buffer_destroy(buffer);
