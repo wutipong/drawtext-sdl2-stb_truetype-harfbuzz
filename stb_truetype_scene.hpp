@@ -7,7 +7,7 @@
 #include <SDL2/SDL.h>
 #include <stb_truetype.h>
 
-#include "drawt_text.hpp"
+#include "draw_text.hpp"
 
 class Stb_TruetypeScene : public Scene {
 public:

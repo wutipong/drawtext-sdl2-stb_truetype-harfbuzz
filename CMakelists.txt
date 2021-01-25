@@ -14,9 +14,8 @@ add_executable(main
 	"stb_truetype_scene.hpp" "stb_truetype_scene.cpp" 
 	"stb_truetype_harfbuzz_scene.hpp" "stb_truetype_harfbuzz_scene.cpp"
 	"compare_scene.hpp" "compare_scene.cpp"
-	 "draw_text.cpp" "drawt_text.hpp")
+	 "draw_text.cpp" "draw_text.hpp")
 
-find_package(freetype CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(harfbuzz CONFIG REQUIRED)
@@ -25,7 +24,7 @@ find_path(STB_INCLUDE_DIRS "stb_truetype.h")
 
 target_include_directories(main PRIVATE ${STB_INCLUDE_DIRS})
 
-target_link_libraries(main PRIVATE SDL2::SDL2 SDL2::SDL2main imgui::imgui freetype harfbuzz::harfbuzz utf8cpp)
+target_link_libraries(main PRIVATE SDL2::SDL2 SDL2::SDL2main imgui::imgui harfbuzz::harfbuzz utf8cpp)
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Sarabun/fonts/Sarabun-Regular.ttf
      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

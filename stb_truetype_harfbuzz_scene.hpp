@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "drawt_text.hpp"
+#include "draw_text.hpp"
 #include "scene.hpp"
 
 class STB_TrueTypeHarfbuzzScene : public Scene {
