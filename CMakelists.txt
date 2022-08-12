@@ -7,14 +7,12 @@ project(sdl-stb_truetype)
 add_executable(main 
 	"main.cpp" 
 	"scene.hpp" "scene.cpp" 
-	"imgui_sdl/imgui_sdl.h" "imgui_sdl/imgui_sdl.cpp" 
-	"imgui_impl_sdl.h" "imgui_impl_sdl.cpp"
 	"texture.hpp" "texture.cpp" 
 	"menu_scene.hpp" "menu_scene.cpp" 
 	"stb_truetype_scene.hpp" "stb_truetype_scene.cpp" 
 	"stb_truetype_harfbuzz_scene.hpp" "stb_truetype_harfbuzz_scene.cpp"
 	"compare_scene.hpp" "compare_scene.cpp"
-	 "draw_text.cpp" "draw_text.hpp")
+	"draw_text.cpp" "draw_text.hpp")
 
 find_package(SDL2 CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
