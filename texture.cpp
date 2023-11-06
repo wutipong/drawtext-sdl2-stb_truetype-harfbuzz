@@ -278,12 +278,8 @@ void CleanUpGlyphTexture() { SDL_FreePalette(palette); }
 SDL_Texture *CreateTextureFromCodePoint(SDL_Renderer *renderer,
                                         const stbtt_fontinfo &info,
                                         wchar_t &codepoint, const float &scale,
-                                        const SDL_Color &color, int &advance,
-                                        SDL_Rect &dst) {
+                                        int &advance, SDL_Rect &dst) {
   int bearing;
-
-  auto format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32);
-
   stbtt_GetCodepointHMetrics(&info, static_cast<int>(codepoint), &advance,
                              &bearing);
 
@@ -298,30 +294,17 @@ SDL_Texture *CreateTextureFromCodePoint(SDL_Renderer *renderer,
   int width = c_x2 - c_x1;
   int height = c_y2 - c_y1;
 
-  unsigned char *bitmap =
-      new unsigned char[static_cast<size_t>(width) * height];
-
-  stbtt_MakeCodepointBitmap(&info, bitmap, width, height, width, scale, scale,
-                            static_cast<int>(codepoint));
-
   auto surface = SDL_CreateRGBSurfaceWithFormat(
-      0, width, height, format->BitsPerPixel, format->format);
+      0, width, height, SDL_BITSPERPIXEL(SDL_PIXELFORMAT_INDEX8),
+      SDL_PIXELFORMAT_INDEX8);
+
+  SDL_SetSurfacePalette(surface, palette);
 
   SDL_LockSurface(surface);
+  unsigned char *bitmap = reinterpret_cast<unsigned char *>(surface->pixels);
 
-  for (int sy = 0; sy < height; sy++) {
-    for (int sx = 0; sx < width; sx++) {
-      unsigned char &alpha = bitmap[sy * width + sx];
-
-      auto pixel = reinterpret_cast<Uint32 *>(surface->pixels) +
-                   (sy * (surface->pitch / sizeof(Uint32)) + sx);
-
-      *pixel = SDL_MapRGBA(format, color.r, color.g, color.b, alpha);
-    }
-  }
-
-  delete[] bitmap;
-
+  stbtt_MakeCodepointBitmap(&info, bitmap, width, height, surface->pitch, scale,
+                            scale, static_cast<int>(codepoint));
   SDL_UnlockSurface(surface);
 
   auto texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -331,7 +314,6 @@ SDL_Texture *CreateTextureFromCodePoint(SDL_Renderer *renderer,
 
   dst = {bearing, static_cast<int>(y), width, height};
 
-  SDL_FreeFormat(format);
   SDL_FreeSurface(surface);
 
   return texture;

@@ -17,14 +17,17 @@ void DrawText(const std::array<char, bufferSize> &text, const SDL_Color &color,
 
     int advance;
     SDL_Rect dst;
-    SDL_Texture *glyph_texture = CreateTextureFromCodePoint(
-        renderer, info, c, scale, color, advance, dst);
+    SDL_Texture *glyph_texture =
+        CreateTextureFromCodePoint(renderer, info, c, scale, advance, dst);
 
     if (glyph_texture != nullptr) {
       dst.x += x;
       dst.y += baseline;
 
       SDL_SetTextureBlendMode(glyph_texture, SDL_BLENDMODE_BLEND);
+      SDL_SetTextureColorMod(glyph_texture, color.r, color.g, color.b);
+      SDL_SetTextureAlphaMod(glyph_texture, color.a);
+
       SDL_RenderCopy(renderer, glyph_texture, NULL, &dst);
       SDL_DestroyTexture(glyph_texture);
     }

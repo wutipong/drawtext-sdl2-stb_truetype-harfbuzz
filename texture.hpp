@@ -11,8 +11,7 @@ void CleanUpGlyphTexture();
 SDL_Texture *CreateTextureFromCodePoint(SDL_Renderer *renderer,
                                         const stbtt_fontinfo &info,
                                         wchar_t &codepoint, const float &scale,
-                                        const SDL_Color &color, int &advance,
-                                        SDL_Rect &dst);
+                                        int &advance, SDL_Rect &dst);
 
 SDL_Texture *CreateTextureFromIndex(SDL_Renderer *renderer,
                                     const stbtt_fontinfo &info,
