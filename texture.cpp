@@ -322,12 +322,8 @@ SDL_Texture *CreateTextureFromCodePoint(SDL_Renderer *renderer,
 SDL_Texture *CreateTextureFromIndex(SDL_Renderer *renderer,
                                     const stbtt_fontinfo &info,
                                     const int &index, const float &scale,
-                                    const SDL_Color &color, int &advance,
-                                    SDL_Rect &dst) {
+                                    int &advance, SDL_Rect &dst) {
   int bearing;
-
-  auto format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32);
-
   stbtt_GetGlyphHMetrics(&info, index, &advance, &bearing);
 
   advance = static_cast<int>(roundf(advance * scale));
@@ -341,29 +337,18 @@ SDL_Texture *CreateTextureFromIndex(SDL_Renderer *renderer,
   int width = c_x2 - c_x1;
   int height = c_y2 - c_y1;
 
-  unsigned char *bitmap =
-      new unsigned char[static_cast<size_t>(width) * height];
-
-  stbtt_MakeGlyphBitmap(&info, bitmap, width, height, width, scale, scale,
-                        index);
-
   auto surface = SDL_CreateRGBSurfaceWithFormat(
-      0, width, height, format->BitsPerPixel, format->format);
+      0, width, height, SDL_BITSPERPIXEL(SDL_PIXELFORMAT_INDEX8),
+      SDL_PIXELFORMAT_INDEX8);
+
+  SDL_SetSurfacePalette(surface, palette);
 
   SDL_LockSurface(surface);
 
-  for (int sy = 0; sy < height; sy++) {
-    for (int sx = 0; sx < width; sx++) {
-      unsigned char &alpha = bitmap[sy * width + sx];
+  unsigned char *bitmap = reinterpret_cast<unsigned char *>(surface->pixels);
 
-      auto pixel = reinterpret_cast<Uint32 *>(surface->pixels) +
-                   (sy * (surface->pitch / sizeof(Uint32)) + sx);
-
-      *pixel = SDL_MapRGBA(format, color.r, color.g, color.b, alpha);
-    }
-  }
-
-  delete[] bitmap;
+  stbtt_MakeGlyphBitmap(&info, bitmap, width, height, surface->pitch, scale,
+                        scale, index);
 
   SDL_UnlockSurface(surface);
 
@@ -374,7 +359,6 @@ SDL_Texture *CreateTextureFromIndex(SDL_Renderer *renderer,
 
   dst = {c_x1, y, width, height};
 
-  SDL_FreeFormat(format);
   SDL_FreeSurface(surface);
 
   return texture;

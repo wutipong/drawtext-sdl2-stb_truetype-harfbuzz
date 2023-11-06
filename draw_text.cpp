@@ -66,13 +66,16 @@ void DrawTextHarfbuzz(const std::array<char, bufferSize> &text,
     int advance;
     SDL_Rect dst;
     SDL_Texture *glyph_texture = CreateTextureFromIndex(
-        renderer, info, glyph_infos[i].codepoint, scale, color, advance, dst);
+        renderer, info, glyph_infos[i].codepoint, scale, advance, dst);
 
     if (glyph_texture != nullptr) {
       dst.x += x + (glyph_positions[i].x_offset >> 6);
       dst.y += baseline - (glyph_positions[i].y_offset >> 6);
 
       SDL_SetTextureBlendMode(glyph_texture, SDL_BLENDMODE_BLEND);
+      SDL_SetTextureColorMod(glyph_texture, color.r, color.g, color.b);
+      SDL_SetTextureAlphaMod(glyph_texture, color.a);
+
       SDL_RenderCopy(renderer, glyph_texture, NULL, &dst);
       SDL_DestroyTexture(glyph_texture);
     }
