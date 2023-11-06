@@ -7,13 +7,17 @@
 void InitGlyphTexture();
 void CleanUpGlyphTexture();
 
-SDL_Texture *CreateTextureFromCodePoint(SDL_Renderer *renderer,
-                                        const stbtt_fontinfo &info,
-                                        wchar_t &codepoint, const float &scale,
-                                        int &advance, SDL_Rect &dst);
+struct GlyphTextureInfo {
+  SDL_Texture *texture;
+  int advance;
+  SDL_Rect dest;
+};
 
-SDL_Texture *CreateTextureFromIndex(SDL_Renderer *renderer,
+GlyphTextureInfo CreateTextureFromCodePoint(SDL_Renderer *renderer,
+                                        const stbtt_fontinfo &info,
+                                        const wchar_t &codepoint, const float &scale);
+
+GlyphTextureInfo CreateTextureFromIndex(SDL_Renderer *renderer,
                                     const stbtt_fontinfo &info,
-                                    const int &index, const float &scale,
-                                    int &advance, SDL_Rect &dst);
+                                    const int &index, const float &scale);
 #endif

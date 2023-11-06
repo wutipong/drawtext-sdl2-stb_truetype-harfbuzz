@@ -269,10 +269,11 @@ SDL_Palette *palette = nullptr;
 
 enum class InputType { Index, Codepoint };
 
-SDL_Texture *DoCreateTexture(SDL_Renderer *renderer, const stbtt_fontinfo &info,
-                             const int &input, const InputType &type,
-                             const float &scale, int &advance, SDL_Rect &dst) {
+GlyphTextureInfo DoCreateTexture(SDL_Renderer *renderer,
+                                 const stbtt_fontinfo &info, const int &input,
+                                 const InputType &type, const float &scale) {
   int bearing;
+  int advance;
   int c_x1, c_y1, c_x2, c_y2;
 
   switch (type) {
@@ -326,11 +327,13 @@ SDL_Texture *DoCreateTexture(SDL_Renderer *renderer, const stbtt_fontinfo &info,
     SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
   }
 
-  dst = {bearing, static_cast<int>(y), width, height};
-
   SDL_FreeSurface(surface);
 
-  return texture;
+  return {
+      .texture = texture,
+      .advance = advance,
+      .dest = {bearing, static_cast<int>(y), width, height},
+  };
 }
 }; // namespace
 
@@ -341,19 +344,16 @@ void InitGlyphTexture() {
 
 void CleanUpGlyphTexture() { SDL_FreePalette(palette); }
 
-SDL_Texture *CreateTextureFromCodePoint(SDL_Renderer *renderer,
+GlyphTextureInfo CreateTextureFromCodePoint(SDL_Renderer *renderer,
                                         const stbtt_fontinfo &info,
-                                        wchar_t &codepoint, const float &scale,
-                                        int &advance, SDL_Rect &dst) {
+                                        const wchar_t &codepoint,
+                                        const float &scale) {
   auto input = static_cast<int>(codepoint);
-  return DoCreateTexture(renderer, info, input, InputType::Codepoint, scale,
-                         advance, dst);
+  return DoCreateTexture(renderer, info, input, InputType::Codepoint, scale);
 }
 
-SDL_Texture *CreateTextureFromIndex(SDL_Renderer *renderer,
+GlyphTextureInfo CreateTextureFromIndex(SDL_Renderer *renderer,
                                     const stbtt_fontinfo &info,
-                                    const int &index, const float &scale,
-                                    int &advance, SDL_Rect &dst) {
-  return DoCreateTexture(renderer, info, index, InputType::Index, scale,
-                         advance, dst);
+                                    const int &index, const float &scale) {
+  return DoCreateTexture(renderer, info, index, InputType::Index, scale);
 }

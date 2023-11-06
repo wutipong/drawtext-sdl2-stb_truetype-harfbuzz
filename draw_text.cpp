@@ -14,22 +14,19 @@ void DrawText(const std::array<char, bufferSize> &text, const SDL_Color &color,
   utf8::utf8to16(text.begin(), end_it, std::back_inserter(charactors));
 
   for (auto c : charactors) {
+    auto [texture, advance, dest] =
+        CreateTextureFromCodePoint(renderer, info, c, scale);
 
-    int advance;
-    SDL_Rect dst;
-    SDL_Texture *glyph_texture =
-        CreateTextureFromCodePoint(renderer, info, c, scale, advance, dst);
+    if (texture != nullptr) {
+      dest.x += x;
+      dest.y += baseline;
 
-    if (glyph_texture != nullptr) {
-      dst.x += x;
-      dst.y += baseline;
+      SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+      SDL_SetTextureColorMod(texture, color.r, color.g, color.b);
+      SDL_SetTextureAlphaMod(texture, color.a);
 
-      SDL_SetTextureBlendMode(glyph_texture, SDL_BLENDMODE_BLEND);
-      SDL_SetTextureColorMod(glyph_texture, color.r, color.g, color.b);
-      SDL_SetTextureAlphaMod(glyph_texture, color.a);
-
-      SDL_RenderCopy(renderer, glyph_texture, NULL, &dst);
-      SDL_DestroyTexture(glyph_texture);
+      SDL_RenderCopy(renderer, texture, NULL, &dest);
+      SDL_DestroyTexture(texture);
     }
 
     x += advance;
@@ -63,21 +60,19 @@ void DrawTextHarfbuzz(const std::array<char, bufferSize> &text,
   int x = x_start;
 
   for (unsigned int i = 0; i < glyph_count; i++) {
-    int advance;
-    SDL_Rect dst;
-    SDL_Texture *glyph_texture = CreateTextureFromIndex(
-        renderer, info, glyph_infos[i].codepoint, scale, advance, dst);
+    auto [texture, advance, dest] =
+        CreateTextureFromIndex(renderer, info, glyph_infos[i].codepoint, scale);
 
-    if (glyph_texture != nullptr) {
-      dst.x += x + (glyph_positions[i].x_offset >> 6);
-      dst.y += baseline - (glyph_positions[i].y_offset >> 6);
+    if (texture != nullptr) {
+      dest.x += x + (glyph_positions[i].x_offset >> 6);
+      dest.y += baseline - (glyph_positions[i].y_offset >> 6);
 
-      SDL_SetTextureBlendMode(glyph_texture, SDL_BLENDMODE_BLEND);
-      SDL_SetTextureColorMod(glyph_texture, color.r, color.g, color.b);
-      SDL_SetTextureAlphaMod(glyph_texture, color.a);
+      SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+      SDL_SetTextureColorMod(texture, color.r, color.g, color.b);
+      SDL_SetTextureAlphaMod(texture, color.a);
 
-      SDL_RenderCopy(renderer, glyph_texture, NULL, &dst);
-      SDL_DestroyTexture(glyph_texture);
+      SDL_RenderCopy(renderer, texture, NULL, &dest);
+      SDL_DestroyTexture(texture);
     }
 
     x += advance;
