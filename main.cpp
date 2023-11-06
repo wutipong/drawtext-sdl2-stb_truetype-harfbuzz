@@ -2,10 +2,11 @@
 #include <imgui.h>
 
 #include "context.hpp"
-#include <imgui_impl_sdl2.h>
-#include <imgui_impl_sdlrenderer2.h>
 #include "menu_scene.hpp"
 #include "scene.hpp"
+#include <imgui_impl_sdl2.h>
+#include <imgui_impl_sdlrenderer2.h>
+
 
 constexpr int WIDTH = 1280;
 constexpr int HEIGHT = 720;
@@ -26,8 +27,7 @@ int main(int argc, char **argv) {
   ImGui_ImplSDLRenderer2_Init(renderer);
   ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
 
-  Context c{renderer, nullptr};
-  FT_Init_FreeType(&c.ftLibrary);
+  Context c{.renderer = renderer};
 
   while (true) {
     SDL_Event event;
@@ -56,8 +56,6 @@ int main(int argc, char **argv) {
   ImGui_ImplSDL2_Shutdown();
   ImGui_ImplSDLRenderer2_Shutdown();
   ImGui::DestroyContext();
-
-  FT_Done_FreeType(c.ftLibrary);
 
   SDL_DestroyWindow(window);
   SDL_Quit();

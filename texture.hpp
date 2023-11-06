@@ -2,14 +2,8 @@
 #define TEXTURE_HPP
 
 #include <SDL2/SDL.h>
-#include <ft2build.h>
-#include FT_FREETYPE_H
 
 #include <stb_truetype.h>
-
-SDL_Texture *CreateTextureFromFT_Bitmap(SDL_Renderer *renderer,
-                                        const FT_Bitmap &bitmap,
-                                        const SDL_Color &color);
 
 SDL_Texture *CreateTextureFromCodePoint(SDL_Renderer *renderer,
                                         const stbtt_fontinfo &info,
