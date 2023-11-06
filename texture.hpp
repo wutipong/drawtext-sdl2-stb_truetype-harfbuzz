@@ -15,7 +15,7 @@ struct GlyphTextureInfo {
 
 GlyphTextureInfo CreateTextureFromCodePoint(SDL_Renderer *renderer,
                                         const stbtt_fontinfo &info,
-                                        const wchar_t &codepoint, const float &scale);
+                                        const int &codepoint, const float &scale);
 
 GlyphTextureInfo CreateTextureFromIndex(SDL_Renderer *renderer,
                                     const stbtt_fontinfo &info,

@@ -346,10 +346,9 @@ void CleanUpGlyphTexture() { SDL_FreePalette(palette); }
 
 GlyphTextureInfo CreateTextureFromCodePoint(SDL_Renderer *renderer,
                                         const stbtt_fontinfo &info,
-                                        const wchar_t &codepoint,
+                                        const int &codepoint,
                                         const float &scale) {
-  auto input = static_cast<int>(codepoint);
-  return DoCreateTexture(renderer, info, input, InputType::Codepoint, scale);
+  return DoCreateTexture(renderer, info, codepoint, InputType::Codepoint, scale);
 }
 
 GlyphTextureInfo CreateTextureFromIndex(SDL_Renderer *renderer,

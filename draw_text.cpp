@@ -9,7 +9,7 @@ void DrawText(const std::array<char, bufferSize> &text, const SDL_Color &color,
               SDL_Renderer *renderer) {
   int x = x_start;
 
-  std::vector<wchar_t> charactors;
+  std::vector<int> charactors;
   auto end_it = utf8::find_invalid(text.begin(), text.end());
   utf8::utf8to16(text.begin(), end_it, std::back_inserter(charactors));
 
