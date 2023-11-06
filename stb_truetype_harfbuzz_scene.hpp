@@ -23,7 +23,7 @@ private:
   static constexpr size_t bufferSize = 256;
 
   const std::string text = "Test";
-  static constexpr char *fontFile = "Sarabun-Regular.ttf";
+  static constexpr char fontFile[] = "Sarabun-Regular.ttf";
 
   int fontSize = 64;
   SDL_Color color = {0, 0, 0, 255};

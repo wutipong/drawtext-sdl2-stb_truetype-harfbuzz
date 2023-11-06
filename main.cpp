@@ -2,8 +2,8 @@
 #include <imgui.h>
 
 #include "context.hpp"
-#include <imgui_impl_sdl.h>
-#include <imgui_impl_sdlrenderer.h>
+#include <imgui_impl_sdl2.h>
+#include <imgui_impl_sdlrenderer2.h>
 #include "menu_scene.hpp"
 #include "scene.hpp"
 
@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
   io.Fonts->AddFontFromFileTTF("Sarabun-Regular.ttf", 20.0f, NULL,
                                io.Fonts->GetGlyphRangesThai());
 
-  ImGui_ImplSDLRenderer_Init(renderer);
+  ImGui_ImplSDLRenderer2_Init(renderer);
   ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
 
   Context c{renderer, nullptr};
@@ -40,21 +40,21 @@ int main(int argc, char **argv) {
     SDL_SetRenderDrawColor(renderer, 0x50, 0x82, 0xaa, 0xff);
     SDL_RenderClear(renderer);
 
-    ImGui_ImplSDLRenderer_NewFrame();
+    ImGui_ImplSDLRenderer2_NewFrame();
     ImGui_ImplSDL2_NewFrame(window);
     ImGui::NewFrame();
 
     Scene::TickCurrent(c);
 
     ImGui::Render();
-    ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
+    ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
 
     SDL_RenderPresent(renderer);
     SDL_Delay(10);
   }
 
   ImGui_ImplSDL2_Shutdown();
-  ImGui_ImplSDLRenderer_Shutdown();
+  ImGui_ImplSDLRenderer2_Shutdown();
   ImGui::DestroyContext();
 
   FT_Done_FreeType(c.ftLibrary);

@@ -1,6 +1,3 @@
 [submodule "Sarabun"]
 	path = Sarabun
 	url = https://github.com/cadsondemak/Sarabun.git
-[submodule "vcpkg"]
-	path = vcpkg
-	url = https://github.com/Microsoft/vcpkg.git

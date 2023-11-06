@@ -14,6 +14,16 @@ add_executable(main
 	"compare_scene.hpp" "compare_scene.cpp"
 	"draw_text.cpp" "draw_text.hpp")
 
+target_compile_features(main PRIVATE cxx_std_20)
+set_property(TARGET main PROPERTY CXX_STANDARD 20)
+set_property(TARGET main PROPERTY CXX_STANDARD_REQUIRED ON)
+
+if (MSVC)
+	set_property(TARGET main PROPERTY WIN32_EXECUTABLE ON)
+	target_compile_options(main PRIVATE /Zc:__cplusplus)
+	set_property(TARGET main PROPERTY VS_DPI_AWARE "PerMonitor")
+endif ()
+
 find_package(SDL2 CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(harfbuzz CONFIG REQUIRED)
@@ -24,5 +34,6 @@ target_include_directories(main PRIVATE ${STB_INCLUDE_DIRS})
 
 target_link_libraries(main PRIVATE SDL2::SDL2 SDL2::SDL2main imgui::imgui harfbuzz::harfbuzz utf8cpp)
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Sarabun/fonts/Sarabun-Regular.ttf
-     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+add_custom_target(copy_file ALL
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/Sarabun/fonts/Sarabun-Regular.ttf $<TARGET_FILE_DIR:main>
+)
