@@ -266,29 +266,33 @@ constexpr std::array<SDL_Color, 256> paletteColors = {
     SDL_Color{.r = 0xFF, .g = 0xFF, .b = 0xFF, .a = 0xFF},
 };
 SDL_Palette *palette = nullptr;
-}; // namespace
 
-void InitGlyphTexture() {
-  palette = SDL_AllocPalette(paletteColors.size());
-  SDL_SetPaletteColors(palette, paletteColors.data(), 0, paletteColors.size());
-}
+enum class InputType { Index, Codepoint };
 
-void CleanUpGlyphTexture() { SDL_FreePalette(palette); }
-
-SDL_Texture *CreateTextureFromCodePoint(SDL_Renderer *renderer,
-                                        const stbtt_fontinfo &info,
-                                        wchar_t &codepoint, const float &scale,
-                                        int &advance, SDL_Rect &dst) {
+SDL_Texture *DoCreateTexture(SDL_Renderer *renderer, const stbtt_fontinfo &info,
+                             const int &input, const InputType &type,
+                             const float &scale, int &advance, SDL_Rect &dst) {
   int bearing;
-  stbtt_GetCodepointHMetrics(&info, static_cast<int>(codepoint), &advance,
-                             &bearing);
+  int c_x1, c_y1, c_x2, c_y2;
+
+  switch (type) {
+  case InputType::Codepoint:
+    stbtt_GetCodepointHMetrics(&info, input, &advance, &bearing);
+    stbtt_GetCodepointBitmapBox(&info, input, scale, scale, &c_x1, &c_y1, &c_x2,
+                                &c_y2);
+
+    break;
+
+  case InputType::Index:
+    stbtt_GetGlyphHMetrics(&info, input, &advance, &bearing);
+    stbtt_GetGlyphBitmapBox(&info, input, scale, scale, &c_x1, &c_y1, &c_x2,
+                            &c_y2);
+
+    break;
+  }
 
   advance = static_cast<int>(roundf(advance * scale));
   bearing = static_cast<int>(roundf(bearing * scale));
-
-  int c_x1, c_y1, c_x2, c_y2;
-  stbtt_GetCodepointBitmapBox(&info, static_cast<int>(codepoint), scale, scale,
-                              &c_x1, &c_y1, &c_x2, &c_y2);
   int y = c_y1;
 
   int width = c_x2 - c_x1;
@@ -303,8 +307,18 @@ SDL_Texture *CreateTextureFromCodePoint(SDL_Renderer *renderer,
   SDL_LockSurface(surface);
   unsigned char *bitmap = reinterpret_cast<unsigned char *>(surface->pixels);
 
-  stbtt_MakeCodepointBitmap(&info, bitmap, width, height, surface->pitch, scale,
-                            scale, static_cast<int>(codepoint));
+  switch (type) {
+  case InputType::Codepoint:
+    stbtt_MakeCodepointBitmap(&info, bitmap, width, height, surface->pitch,
+                              scale, scale, input);
+    break;
+
+  case InputType::Index:
+    stbtt_MakeGlyphBitmap(&info, bitmap, width, height, surface->pitch, scale,
+                          scale, input);
+    break;
+  }
+
   SDL_UnlockSurface(surface);
 
   auto texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -318,48 +332,28 @@ SDL_Texture *CreateTextureFromCodePoint(SDL_Renderer *renderer,
 
   return texture;
 }
+}; // namespace
+
+void InitGlyphTexture() {
+  palette = SDL_AllocPalette(paletteColors.size());
+  SDL_SetPaletteColors(palette, paletteColors.data(), 0, paletteColors.size());
+}
+
+void CleanUpGlyphTexture() { SDL_FreePalette(palette); }
+
+SDL_Texture *CreateTextureFromCodePoint(SDL_Renderer *renderer,
+                                        const stbtt_fontinfo &info,
+                                        wchar_t &codepoint, const float &scale,
+                                        int &advance, SDL_Rect &dst) {
+  auto input = static_cast<int>(codepoint);
+  return DoCreateTexture(renderer, info, input, InputType::Codepoint, scale,
+                         advance, dst);
+}
 
 SDL_Texture *CreateTextureFromIndex(SDL_Renderer *renderer,
                                     const stbtt_fontinfo &info,
                                     const int &index, const float &scale,
                                     int &advance, SDL_Rect &dst) {
-  int bearing;
-  stbtt_GetGlyphHMetrics(&info, index, &advance, &bearing);
-
-  advance = static_cast<int>(roundf(advance * scale));
-  bearing = static_cast<int>(roundf(bearing * scale));
-
-  int c_x1, c_y1, c_x2, c_y2;
-  stbtt_GetGlyphBitmapBox(&info, index, scale, scale, &c_x1, &c_y1, &c_x2,
-                          &c_y2);
-  int y = c_y1;
-
-  int width = c_x2 - c_x1;
-  int height = c_y2 - c_y1;
-
-  auto surface = SDL_CreateRGBSurfaceWithFormat(
-      0, width, height, SDL_BITSPERPIXEL(SDL_PIXELFORMAT_INDEX8),
-      SDL_PIXELFORMAT_INDEX8);
-
-  SDL_SetSurfacePalette(surface, palette);
-
-  SDL_LockSurface(surface);
-
-  unsigned char *bitmap = reinterpret_cast<unsigned char *>(surface->pixels);
-
-  stbtt_MakeGlyphBitmap(&info, bitmap, width, height, surface->pitch, scale,
-                        scale, index);
-
-  SDL_UnlockSurface(surface);
-
-  auto texture = SDL_CreateTextureFromSurface(renderer, surface);
-  if (texture != nullptr) {
-    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-  }
-
-  dst = {c_x1, y, width, height};
-
-  SDL_FreeSurface(surface);
-
-  return texture;
+  return DoCreateTexture(renderer, info, index, InputType::Index, scale,
+                         advance, dst);
 }

@@ -52,11 +52,11 @@ int main(int argc, char **argv) {
     ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
 
     SDL_RenderPresent(renderer);
-    SDL_Delay(10);
+    SDL_Delay(1);
   }
 
   CleanUpGlyphTexture();
-  
+
   ImGui_ImplSDL2_Shutdown();
   ImGui_ImplSDLRenderer2_Shutdown();
   ImGui::DestroyContext();
