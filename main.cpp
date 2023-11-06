@@ -4,9 +4,10 @@
 #include "context.hpp"
 #include "menu_scene.hpp"
 #include "scene.hpp"
+#include "texture.hpp"
+
 #include <imgui_impl_sdl2.h>
 #include <imgui_impl_sdlrenderer2.h>
-
 
 constexpr int WIDTH = 1280;
 constexpr int HEIGHT = 720;
@@ -29,6 +30,7 @@ int main(int argc, char **argv) {
 
   Context c{.renderer = renderer};
 
+  InitGlyphTexture();
   while (true) {
     SDL_Event event;
     if (SDL_PollEvent(&event)) {
@@ -53,6 +55,8 @@ int main(int argc, char **argv) {
     SDL_Delay(10);
   }
 
+  CleanUpGlyphTexture();
+  
   ImGui_ImplSDL2_Shutdown();
   ImGui_ImplSDLRenderer2_Shutdown();
   ImGui::DestroyContext();
