@@ -25,5 +25,5 @@ private:
   TextBuffer buffer;
 
   stbtt_fontinfo fontInfo;
-  std::vector<unsigned char> fontData;
+  std::vector<char> fontData;
 };

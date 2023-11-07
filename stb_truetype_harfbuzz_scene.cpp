@@ -10,10 +10,9 @@
 #include "menu_scene.hpp"
 
 bool STB_TrueTypeHarfbuzzScene::Init(const Context &context) {
-  std::basic_ifstream<unsigned char> file(fontFile, std::ios::binary);
-  fontData =
-      std::vector<unsigned char>{std::istreambuf_iterator<unsigned char>(file),
-                                 std::istreambuf_iterator<unsigned char>()};
+  std::basic_ifstream<char> file(fontFile, std::ios::binary);
+  fontData = std::vector<char>{std::istreambuf_iterator<char>(file),
+                               std::istreambuf_iterator<char>()};
 
   file.close();
 
